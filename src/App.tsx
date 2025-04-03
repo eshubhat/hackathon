@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoutes";
+import NotFound from "./page/notFound/NotFound";
 
 const Dashboard = () => <h1>Dashboard (All Users)</h1>;
 const Settings = () => <h1>Settings (Admin Only)</h1>;

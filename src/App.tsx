@@ -1,6 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoutes";
+import Login from "./page/auth/Login";
+import ParentLogin from "./page/auth/ParentLogin";
+import NotFound from "./page/Notfound";
+import Landing from "./page/Landing";
 
 const Dashboard = () => <h1>Dashboard (All Users)</h1>;
 const Settings = () => <h1>Settings (Admin Only)</h1>;
@@ -28,20 +32,37 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <RoleSwitcher />
-        <nav>
-          <Link to="/dashboard">Dashboard</Link> | 
-          <Link to="/settings">Settings</Link> | 
-          <Link to="/grade-submission">Grade Submission</Link> | 
-          <Link to="/view-results">View Results</Link>
-        </nav>
-
         <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/signin" element={<Login />} />
+          <Route path="/parentsignin" element={<ParentLogin />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/view-results" element={<ProtectedRoute requiredRole="student"><ViewResults /></ProtectedRoute>} />
-          <Route path="/grade-submission" element={<ProtectedRoute requiredRole="teacher"><GradeSubmission /></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute requiredRole="admin"><Settings /></ProtectedRoute>} />
+          <Route
+            path="/view-results"
+            element={
+              <ProtectedRoute requiredRole="student">
+                <ViewResults />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/grade-submission"
+            element={
+              <ProtectedRoute requiredRole="teacher">
+                <GradeSubmission />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </AuthProvider>

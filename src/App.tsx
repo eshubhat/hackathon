@@ -5,6 +5,10 @@ import Login from "./page/auth/Login";
 import ParentLogin from "./page/auth/ParentLogin";
 import NotFound from "./page/Notfound";
 import Landing from "./page/Landing";
+import AdminLanding from "./page/Admin/AdminLanding";
+import AdminStudent from "./page/Admin/AdminStudent";
+import AdminDepartment from "./page/Admin/AdminDepartment";
+import AdminTeacher from "./page/Admin/AdminTeacher";
 
 const Dashboard = () => <h1>Dashboard (All Users)</h1>;
 const Settings = () => <h1>Settings (Admin Only)</h1>;
@@ -34,6 +38,9 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="admin/department" element={<AdminDepartment />} />
+          <Route path="admin/teacher/" element={<AdminTeacher />} />
+          <Route path="admin/student/" element={<AdminStudent />} />
           <Route path="/signin" element={<Login />} />
           <Route path="/parentsignin" element={<ParentLogin />} />
           <Route path="/dashboard" element={<Dashboard />} />

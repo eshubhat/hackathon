@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SideMenu from "../../components/Navbar/Sidemenu";
 import Navbar from "../../components/Navbar";
 import {
@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { SearchIcon } from "@/assets/icons/Icons";
 
 interface StudentFields {
   usn: string;
@@ -52,8 +53,30 @@ const initialStudents: StudentFields[] = [
   },
 ];
 
+const FetchedDepartment: string[] = ["CS", "EC", "EE", "ME"];
+
+interface NewStudentFields {
+  username: string;
+  email: string;
+  DOB: string;
+  JoiningYear: string;
+  department: string;
+  parentEmail: string;
+}
+
 const AdminStudent = () => {
   const [students, setStudents] = useState<StudentFields[]>(initialStudents);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [newStudent, setNewStudent] = useState<NewStudentFields>({
+    username: "",
+    email: "",
+    DOB: "",
+    JoiningYear: new Date().getFullYear().toString(),
+    department: "",
+    parentEmail: "",
+  });
+  const [showAddForm, setShowAddForm] = useState(false);
+
   const [editMode, setEditMode] = useState<string | null>(null);
   const [editedStudent, setEditedStudent] = useState<StudentFields | null>(
     null
@@ -97,11 +120,166 @@ const AdminStudent = () => {
     setEditedStudent(null);
   };
 
+  // Handle search
+  const [filteredStudents, setFilteredStudents] =
+    useState<StudentFields[]>(initialStudents);
+
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredStudents(students);
+    } else {
+      setFilteredStudents(
+        students.filter(
+          (student) =>
+            student.usn.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            student.parentEmail
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        )
+      );
+    }
+  }, [searchQuery, students]);
+
+  // Handle adding new student
+  const handleAddStudent = () => {
+    if (
+      newStudent.username &&
+      newStudent.email &&
+      newStudent.DOB &&
+      newStudent.JoiningYear &&
+      newStudent.department &&
+      newStudent.parentEmail
+    ) {
+      {
+        /**Call api to backend to update student then just show the fields */
+      }
+      const response: string = "";
+      const newAddedStudent: StudentFields = {
+        usn: response,
+        DOB: newStudent.DOB,
+        div: response,
+        parentEmail: newStudent.parentEmail,
+      };
+      setStudents([...students, newAddedStudent]);
+      setNewStudent({
+        username: "",
+        email: "",
+        DOB: "",
+        parentEmail: "",
+        JoiningYear: new Date().getFullYear().toString(),
+        department: "",
+      });
+      setShowAddForm(false);
+    }
+  };
+
   return (
     <main className="min-h-screen w-full adminbody px-[28px] md:pl-[22vw] pr-[4vw]">
       <SideMenu />
       <div>
         <Navbar />
+
+        <div className="flex justify-between items-center py-4">
+          <div className="relative w-1/3">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black">
+              <SearchIcon />
+            </div>
+            <input
+              type="text"
+              placeholder="Search by USN or Email"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border ring-2 ring-black px-10 py-1 rounded-md w-full pl-10 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="bg-green-500 text-white px-4 py-2 rounded-md"
+          >
+            Add Student
+          </button>
+        </div>
+
+        {showAddForm && (
+          <div className="p-4 border rounded-md shadow-md w-1/2 mx-auto mt-4">
+            <h2 className="text-xl mb-2">Add New Student</h2>
+            <input
+              type="text"
+              placeholder="Student Name"
+              value={newStudent.username}
+              onChange={(e) =>
+                setNewStudent({ ...newStudent, username: e.target.value })
+              }
+              className="border p-2 w-full mb-2"
+            />
+            <input
+              type="email"
+              placeholder="Student Email"
+              value={newStudent.email}
+              onChange={(e) =>
+                setNewStudent({ ...newStudent, email: e.target.value })
+              }
+              className="border p-2 w-full mb-2"
+            />
+            <input
+              type="date"
+              value={newStudent.DOB}
+              onChange={(e) =>
+                setNewStudent({ ...newStudent, DOB: e.target.value })
+              }
+              className="border p-2 w-full mb-2"
+            />
+            <input
+              type="text"
+              placeholder="Division"
+              value={newStudent.JoiningYear}
+              disabled
+              // onChange={(e) =>
+              //   setNewStudent({ ...newStudent, div: e.target.value })
+              // }
+              className="border p-2 w-full mb-2 cursor-not-allowed"
+            />
+            <select
+              value={newStudent.department}
+              onChange={(e) =>
+                setNewStudent({ ...newStudent, department: e.target.value })
+              }
+              className="border p-2 w-full mb-2"
+            >
+              <option value="" disabled>
+                Select Department
+              </option>
+              {FetchedDepartment.map((dept) => (
+                <option key={dept} value={dept}>
+                  {dept}
+                </option>
+              ))}
+            </select>
+            <input
+              type="email"
+              placeholder="Parent Email"
+              value={newStudent.parentEmail}
+              onChange={(e) =>
+                setNewStudent({ ...newStudent, parentEmail: e.target.value })
+              }
+              className="border p-2 w-full mb-2"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={handleAddStudent}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => setShowAddForm(false)}
+                className="bg-gray-400 text-white px-4 py-2 rounded-md cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
         <div className="pt-8">
           <Table>
             <TableCaption>A list of your registered Students.</TableCaption>
@@ -115,7 +293,7 @@ const AdminStudent = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {students.map((student) => (
+              {filteredStudents.map((student) => (
                 <TableRow key={student.usn}>
                   <TableCell className="font-medium">{student.usn}</TableCell>
 
